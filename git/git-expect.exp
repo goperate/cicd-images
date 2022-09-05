@@ -1,0 +1,12 @@
+#!/usr/bin/expect
+set timeout 60
+spawn ssh-keygen -t rsa -C "" 
+while {1} {
+  expect {
+    eof                          {break}
+    "Enter file in which to save the key"   {send "\r"}
+    "Enter passphrase"                      {send "\r"}
+    "Enter same passphrase again"           {send "\r"}
+  }
+}
+wait
