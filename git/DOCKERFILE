@@ -1,0 +1,19 @@
+FROM bitnami/git:2.37.3
+
+COPY ./git-init.sh /root/git-init.sh
+COPY ./git-expect.exp /root/git-expect.exp
+
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && sed -i "s/#PasswordAuthentication.*/PasswordAuthentication yes/g" /etc/ssh/sshd_config \
+    && sed -i "s/#PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config \
+    && git config --global user.name "蒲坤" \
+    && git config --global user.email pukun@eoffcn.com \
+    && ssh-keygen -t dsa -P "" -f /etc/ssh/ssh_host_dsa_key \
+    && ssh-keygen -t rsa -P "" -f /etc/ssh/ssh_host_rsa_key -y \
+    && ssh-keygen -t ecdsa -P "" -f /etc/ssh/ssh_host_ecdsa_key -y \
+    && ssh-keygen -t ed25519 -P "" -f /etc/ssh/ssh_host_ed25519_key -y \
+    && echo "root:;;;;;;" | chpasswd \
+    && update-rc.d ssh enable
+
+RUN bash /root/git-init.sh
+RUN expect /root/git-expect.exp
